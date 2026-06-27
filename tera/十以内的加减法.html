@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>简单算数</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(31, 78, 132, 0.25),
+                        0 8px 20px rgba(31, 78, 132, 0.1);
+            padding: 48px 56px;
+            width: 100%;
+            max-width: 600px;
+            min-height: 500px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: 2px;
+        }
+
+        .counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #fff;
+            border-radius: 999px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(253, 160, 133, 0.4);
+        }
+
+        .counter-icon {
+            font-size: 18px;
+        }
+
+        .difficulty-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 18px 0 22px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #e0e6ed;
+            background: #fff;
+            color: #7f8c8d;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 1px;
+        }
+
+        .difficulty-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .question {
+            font-size: 56px;
+            font-weight: 700;
+            color: #34495e;
+            margin: 24px 0 36px;
+            letter-spacing: 4px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #e0e6ed;
+            border-radius: 14px;
+            outline: none;
+            transition: all 0.25s ease;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .answer-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-continue {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(67, 233, 123, 0.4);
+            width: 100%;
+        }
+
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.5);
+        }
+
+        .btn-continue:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            font-size: 120px;
+            margin: 16px 0;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .result svg {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+        }
+
+        .result.correct {
+            color: #43e97b;
+        }
+
+        .result.anim-bounce {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                       bounce 0.7s ease 0.4s;
+        }
+
+        .result.anim-swing {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                       swing 0.9s ease 0.4s;
+        }
+
+        .result.anim-pulse {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                       pulse 0.8s ease 0.4s;
+        }
+
+        .result.anim-float {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                       float 1s ease 0.4s;
+        }
+
+        .result.anim-wiggle {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                       wiggle 0.8s ease 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1) translateY(0); }
+            30% { transform: scale(1.2) translateY(-12px); }
+            60% { transform: scale(0.95) translateY(0); }
+            80% { transform: scale(1.05) translateY(-4px); }
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-14deg); }
+            40% { transform: rotate(14deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            top: -20px;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .card.celebrate {
+            box-shadow: 0 20px 60px rgba(67, 233, 123, 0.45),
+                        0 8px 20px rgba(67, 233, 123, 0.25);
+        }
+
+        .result.wrong {
+            color: #fa709a;
+        }
+
+        .feedback-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #2c3e50;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .shake {
+            animation: shake 0.3s ease;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .card {
+                padding: 28px 22px;
+                min-height: 460px;
+                border-radius: 20px;
+            }
+            .header {
+                margin-bottom: 22px;
+            }
+            .title {
+                font-size: 26px;
+                letter-spacing: 1px;
+            }
+            .difficulty-group {
+                gap: 8px;
+                margin: 14px 0 18px;
+            }
+            .difficulty-btn {
+                padding: 7px 16px;
+                font-size: 13px;
+            }
+            .counter {
+                padding: 7px 16px;
+                font-size: 14px;
+                margin-top: 12px;
+            }
+            .question {
+                font-size: 44px;
+                margin: 18px 0 28px;
+                min-height: 64px;
+                letter-spacing: 2px;
+            }
+            .input-group {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .answer-input {
+                padding: 12px 14px;
+                font-size: 20px;
+                border-radius: 12px;
+            }
+            .btn {
+                padding: 12px 22px;
+                font-size: 16px;
+                border-radius: 12px;
+                letter-spacing: 1px;
+            }
+            .result {
+                font-size: 96px;
+                min-height: 110px;
+                margin: 12px 0;
+            }
+            .feedback-text {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="title">简单算数</div>
+            <div class="difficulty-group">
+                <button class="difficulty-btn active" data-level="1">难度一</button>
+                <button class="difficulty-btn" data-level="2">难度二</button>
+                <button class="difficulty-btn" data-level="3">难度三</button>
+            </div>
+            <div class="counter">
+                <span class="counter-icon">★</span>
+                <span>答对：<span id="correctCount">0</span> 题</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 答题区 -->
+            <div id="quizSection">
+                <div class="question" id="question"></div>
+                <div class="input-group">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" class="answer-input" id="answerInput" placeholder="输入答案" autocomplete="off">
+                    <button class="btn btn-primary" id="submitBtn">确定</button>
+                </div>
+            </div>
+
+            <!-- 结果反馈区 -->
+            <div id="resultSection" class="hidden">
+                <div class="result" id="resultIcon"></div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <button class="btn btn-continue" id="continueBtn">继续</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionEl = document.getElementById('question');
+        const answerInput = document.getElementById('answerInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const quizSection = document.getElementById('quizSection');
+        const resultSection = document.getElementById('resultSection');
+        const resultIcon = document.getElementById('resultIcon');
+        const feedbackText = document.getElementById('feedbackText');
+        const continueBtn = document.getElementById('continueBtn');
+        const correctCountEl = document.getElementById('correctCount');
+
+        let currentAnswer = 0;
+        let correctCount = 0;
+        let currentDifficulty = 1;
+
+        // 生成随机题目：根据当前难度生成
+        function generateQuestion() {
+            let a, b, op, questionText;
+
+            if (currentDifficulty === 1) {
+                // 难度一：1到10的加减法，结果在0到20之间
+                const operators = ['+', '-'];
+                op = operators[Math.floor(Math.random() * operators.length)];
+                if (op === '+') {
+                    a = Math.floor(Math.random() * 10) + 1;
+                    b = Math.floor(Math.random() * 10) + 1;
+                    while (a + b > 20) {
+                        a = Math.floor(Math.random() * 10) + 1;
+                        b = Math.floor(Math.random() * 10) + 1;
+                    }
+                    currentAnswer = a + b;
+                } else {
+                    a = Math.floor(Math.random() * 10) + 1;
+                    b = Math.floor(Math.random() * a) + 1;
+                    currentAnswer = a - b;
+                }
+                questionText = `${a} ${op} ${b} = ?`;
+            } else if (currentDifficulty === 2) {
+                // 难度二：1到100的加减法，结果在0到200之间
+                const operators = ['+', '-'];
+                op = operators[Math.floor(Math.random() * operators.length)];
+                if (op === '+') {
+                    a = Math.floor(Math.random() * 100) + 1;
+                    b = Math.floor(Math.random() * 100) + 1;
+                    while (a + b > 200) {
+                        a = Math.floor(Math.random() * 100) + 1;
+                        b = Math.floor(Math.random() * 100) + 1;
+                    }
+                    currentAnswer = a + b;
+                } else {
+                    a = Math.floor(Math.random() * 100) + 1;
+                    b = Math.floor(Math.random() * a) + 1;
+                    currentAnswer = a - b;
+                }
+                questionText = `${a} ${op} ${b} = ?`;
+            } else {
+                // 难度三：1到9的乘法，结果在1到81之间
+                a = Math.floor(Math.random() * 9) + 1;
+                b = Math.floor(Math.random() * 9) + 1;
+                currentAnswer = a * b;
+                questionText = `${a} × ${b} = ?`;
+            }
+
+            questionEl.textContent = questionText;
+            answerInput.value = '';
+            answerInput.focus();
+        }
+
+        // 彩纸飘落效果
+        function showConfetti() {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+
+            const colors = ['#667eea', '#764ba2', '#43e97b', '#38f9d7', '#f6d365', '#fda085', '#fa709a', '#fee140'];
+
+            for (let i = 0; i < 60; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (Math.random() * 1.8 + 1.6) + 's';
+                piece.style.animationDelay = Math.random() * 0.4 + 's';
+                const size = Math.random() * 8 + 6;
+                piece.style.width = size + 'px';
+                piece.style.height = size + 'px';
+                // 随机形状：圆形或方形
+                if (Math.random() > 0.5) {
+                    piece.style.borderRadius = '50%';
+                }
+                container.appendChild(piece);
+            }
+
+            setTimeout(() => container.remove(), 3800);
+        }
+
+        // 随机鼓励语
+        const praiseTexts = ['回答正确！', '太棒了！', '真厉害！', '继续加油！', '你真聪明！', '答对啦！'];
+
+        // 鼓励图标（SVG 矢量图）：每题随机一种
+        const thumbPraises = [
+            {
+                icon: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+                anim: 'anim-bounce',
+                color: '#52c41a'
+            },
+            {
+                icon: '<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+                anim: 'anim-swing',
+                color: '#fadb14'
+            },
+            {
+                icon: '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+                anim: 'anim-pulse',
+                color: '#ff4d4f'
+            },
+            {
+                icon: '<svg viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-1h14v1z"/></svg>',
+                anim: 'anim-float',
+                color: '#d48806'
+            }
+        ];
+
+        // 检查答案
+        function checkAnswer() {
+            const userAnswer = answerInput.value.trim();
+            if (userAnswer === '') {
+                answerInput.classList.add('shake');
+                setTimeout(() => answerInput.classList.remove('shake'), 300);
+                answerInput.focus();
+                return;
+            }
+
+            const userNum = parseInt(userAnswer, 10);
+            const isCorrect = userNum === currentAnswer;
+
+            // 切换界面
+            quizSection.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+
+            const cardEl = document.querySelector('.card');
+
+            if (isCorrect) {
+                correctCount++;
+                correctCountEl.textContent = correctCount;
+                // 随机选择一种大拇指鼓励效果
+                const praise = thumbPraises[Math.floor(Math.random() * thumbPraises.length)];
+                resultIcon.innerHTML = praise.icon;
+                resultIcon.className = 'result correct ' + praise.anim;
+                resultIcon.style.color = praise.color;
+                feedbackText.textContent = praiseTexts[Math.floor(Math.random() * praiseTexts.length)];
+                // 触发庆祝效果
+                showConfetti();
+                cardEl.classList.add('celebrate');
+                setTimeout(() => cardEl.classList.remove('celebrate'), 1500);
+            } else {
+                resultIcon.textContent = '×';
+                resultIcon.className = 'result wrong';
+                resultIcon.style.color = '';
+                feedbackText.textContent = `答错啦！正确答案是 ${currentAnswer}`;
+                cardEl.classList.remove('celebrate');
+            }
+        }
+
+        // 继续下一题
+        function nextQuestion() {
+            resultSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            generateQuestion();
+        }
+
+        // 事件绑定
+        submitBtn.addEventListener('click', checkAnswer);
+        continueBtn.addEventListener('click', nextQuestion);
+        answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // 难度切换
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDifficulty = parseInt(btn.dataset.level, 10);
+                // 重置计数器
+                correctCount = 0;
+                correctCountEl.textContent = correctCount;
+                // 回到答题区并生成新题
+                resultSection.classList.add('hidden');
+                quizSection.classList.remove('hidden');
+                generateQuestion();
+            });
+        });
+
+        // 启动
+        generateQuestion();
+    </script>
+</body>
+</html>
